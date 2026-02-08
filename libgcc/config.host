@@ -821,6 +821,8 @@ m68k-*-amiga*)
 	CFLAGS="-Os"
 #	tmake_file="$tmake_file m68k/t-glue soft-fp"
 	;;
+m68k-*-human68k*)
+	;;
 m68k-*-elf* | fido-*-elf)
 	tmake_file="$tmake_file m68k/t-floatlib"
 	;;

@@ -1,0 +1,9 @@
+# Makefile fragment for Human68k target.
+
+EXTRA_OBJS += m68k2.o m68k_68000_10_costs.o
+
+m68k2.o: $(srcdir)/config/m68k/m68k2.c $(CONFIG_H)
+	$(CXX) -c $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) $< $(OUTPUT_OPTION)
+
+m68k_68000_10_costs.o: $(srcdir)/config/m68k/m68k_68000_10_costs.c $(CONFIG_H)
+	$(CXX) -c $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) $< $(OUTPUT_OPTION)

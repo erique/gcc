@@ -1960,7 +1960,13 @@ m68k*-*-amigaos*)
 	CFLAGS="-Os"
   	case ${enable_threads} in
 	    yes | posix) thread_file='posix' ;;
-  	esac	
+  	esac
+	;;
+m68k-*-human68k*)
+	default_m68k_cpu=68000
+	tm_file="${tm_file} dbxelf.h elfos.h newlib-stdint.h m68k/human68k.h"
+	tm_defines="${tm_defines} MOTOROLA=1 TARGET_HUMAN68K"
+	tmake_file="m68k/t-floatlib m68k/t-m68kbare m68k/t-m68kelf m68k/t-human68k"
 	;;
 m68k*-*-netbsdelf*)
 	default_m68k_cpu=68020

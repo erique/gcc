@@ -70,6 +70,12 @@ struct m68k_args
   int last_arg_len;
   tree current_param_type; /* New field: formal type of the current argument.  */
   tree fntype; /* initial function type */
+#ifdef TARGET_HUMAN68K
+  int iocscall;       /* nonzero if function has iocscall attribute */
+  int iocscall_level; /* iocscall level (register offset) */
+  int a_regno;        /* next address register index for iocscall */
+  int d_regno;        /* next data register index for iocscall */
+#endif
 };
 
 static struct m68k_args mycum, othercum;
@@ -194,6 +200,25 @@ m68k_init_cumulative_args (CUMULATIVE_ARGS *cump, tree fntype, tree decl)
   else
     /* Call to compiler-support function. */
     cum->current_param_type = cum->fntype = 0;
+
+#ifdef TARGET_HUMAN68K
+  cum->iocscall = 0;
+  cum->iocscall_level = 0;
+  cum->a_regno = 0;
+  cum->d_regno = 0;
+  if (decl)
+    {
+      tree iocs_attr = lookup_attribute ("iocscall", DECL_ATTRIBUTES (decl));
+      if (iocs_attr)
+	{
+	  cum->iocscall = 1;
+	  cum->num_of_regs = 0; // disable regparm for iocscall functions
+	  if (TREE_VALUE (iocs_attr))
+	    cum->iocscall_level = TREE_INT_CST_LOW (TREE_VALUE (TREE_VALUE (iocs_attr)));
+	}
+    }
+#endif
+
   DPRINTF((stderr, "9m68k_init_cumulative_args %p -> %d\r\n", cum, cum->num_of_regs));
 }
 
@@ -332,6 +357,37 @@ m68k_function_arg (cumulative_args_t cum_v, machine_mode mode, const_tree type, 
   DPRINTF((stderr, "m68k_function_arg %p\r\n", cum_v.p));
 
   struct m68k_args *cum = *get_cumulative_args (cum_v) ? &mycum : &othercum;
+
+#ifdef TARGET_HUMAN68K
+  // iocscall: pointer args -> A1+level, A2+level, ...; data args -> D1+level, D2+level, ...
+  if (cum->iocscall)
+    {
+      int regno;
+      int level = cum->iocscall_level;
+
+      // Calculate operand size in registers
+      int opsize = (mode != BLKmode
+		    ? (GET_MODE_SIZE (mode) + 3) & ~3
+		    : (int_size_in_bytes (type) + 3) & ~3) / 4;
+
+      if (type && POINTER_TYPE_P (type))
+	{
+	  if (cum->a_regno + level >= 6)
+	    return NULL_RTX;
+	  regno = A1_REG + level + cum->a_regno++;
+	}
+      else
+	{
+	  if ((cum->d_regno + level + opsize) > 7)
+	    return NULL_RTX;
+	  regno = D1_REG + level + cum->d_regno;
+	  cum->d_regno += opsize;
+	}
+      cum->last_arg_reg = regno;
+      cum->last_arg_len = opsize;
+      return gen_rtx_REG (mode, regno);
+    }
+#endif
 
   tree asmtree = type && cum->current_param_type ? lookup_attribute("asmreg", TYPE_ATTRIBUTES(TREE_VALUE(cum->current_param_type))) : NULL_TREE;
 
@@ -481,6 +537,26 @@ m68k_handle_type_attribute (tree *node, tree name, tree args, int flags ATTRIBUT
 		  break;
 		}
 	    }
+#ifdef TARGET_HUMAN68K
+	  else if (is_attribute_p ("iocscall", name))
+	    {
+	      if (args && TREE_CODE (args) == TREE_LIST)
+		{
+		  tree cst = TREE_VALUE (args);
+		  if (TREE_CODE (cst) != INTEGER_CST)
+		    {
+		      error ("%qE attribute requires an integer constant argument", name);
+		      break;
+		    }
+		  else if (compare_tree_int (cst, IOCSCALL_MAX_LEVEL) > 0)
+		    {
+		      warning (OPT_Wattributes, "argument to %qE attribute larger than %d",
+			       name, IOCSCALL_MAX_LEVEL);
+		      break;
+		    }
+		}
+	    }
+#endif
 	  else
 	    {
 	      warning (OPT_Wattributes, "`%s' attribute only applies to data", IDENTIFIER_POINTER(name));
