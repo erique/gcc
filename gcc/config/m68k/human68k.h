@@ -32,6 +32,10 @@ along with GCC; see the file COPYING3.  If not see
     }						\
   while (0)
 
+// Pass --register-prefix-optional to gas for MIT syntax without % prefix
+#undef ASM_SPEC
+#define ASM_SPEC "%(asm_cpu_spec) %(asm_pcrel_spec) --register-prefix-optional"
+
 #undef LINK_SPEC
 #define LINK_SPEC "-q"
 
