@@ -32,15 +32,16 @@ along with GCC; see the file COPYING3.  If not see
     }						\
   while (0)
 
-// Pass --register-prefix-optional to gas for MIT syntax without % prefix
+// m68kelf.h provides REGISTER_PREFIX "%" so GCC emits %d0, %sp, etc.
+// No need for --register-prefix-optional since all assembly uses % prefix
 #undef ASM_SPEC
-#define ASM_SPEC "%(asm_cpu_spec) %(asm_pcrel_spec) --register-prefix-optional"
+#define ASM_SPEC "%(asm_cpu_spec) %(asm_pcrel_spec)"
 
 #undef LINK_SPEC
 #define LINK_SPEC "-q"
 
 #undef LIB_SPEC
-#define LIB_SPEC "%{!nostdlib: -lc -ldos -liocs}"
+#define LIB_SPEC "%{!nostdlib: -lc -ldos -liocs} %{lm:-lm} %{lpthread:-lpthread}"
 
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC "crt0.o%s"
