@@ -5642,9 +5642,12 @@ print_operand_address2 (FILE *file, rtx addr, int offset)
 	      /* Print the ",index" component, if any.  */
 	      if (address.index)
 		{
+		  rtx idx = address.index;
+		  if (GET_CODE (idx) == SIGN_EXTEND)
+		    idx = XEXP (idx, 0);
 		  fprintf (file, ",%s:%c",
-			   M68K_REGNAME (REGNO (address.index)),
-			   GET_MODE (address.index) == HImode ? 'w' : 'l');
+			   M68K_REGNAME (REGNO (idx)),
+			   GET_MODE (idx) == HImode ? 'w' : 'l');
 		  if (address.scale != 1)
 		    fprintf (file, ":%d", address.scale);
 		}
