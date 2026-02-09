@@ -1965,7 +1965,7 @@ m68k*-*-amigaos*)
 m68k-*-human68k*)
 	default_m68k_cpu=68000
 	tm_file="${tm_file} dbxelf.h elfos.h newlib-stdint.h usegas.h m68k/m68kelf.h m68k/human68k.h"
-	tm_defines="${tm_defines} TARGET_HUMAN68K"
+	tm_defines="${tm_defines} MOTOROLA=1 TARGET_HUMAN68K"
 	tmake_file="m68k/t-floatlib m68k/t-m68kbare m68k/t-m68kelf m68k/t-human68k"
 	;;
 m68k*-*-netbsdelf*)
