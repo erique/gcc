@@ -3778,7 +3778,7 @@ track_sp (int & a5_touched)
       ii.set_sp_offset (0);
 
       if (ii.in_proepi() == IN_CODE)
-	a5_touched |= ii.get_myuse() & 0x2000;
+	a5_touched |= ii.get_myuse() & (1 << FRAME_POINTER_REGNUM);
 
       // if sp is used as source, we cannot shrink the stack yet
       // too complicated - well, could be done^^
