@@ -52,8 +52,3 @@ along with GCC; see the file COPYING3.  If not see
 #undef USER_LABEL_PREFIX
 #define USER_LABEL_PREFIX ""
 
-// iocscall attribute via SUBTARGET_ATTRIBUTES hook
-#define SUBTARGET_ATTRIBUTES \
-  { "iocscall", 0, 1, false, true, true, m68k_handle_type_attribute, true },
-
-#define IOCSCALL_MAX_LEVEL 5
