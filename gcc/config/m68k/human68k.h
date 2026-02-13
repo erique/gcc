@@ -32,10 +32,17 @@ along with GCC; see the file COPYING3.  If not see
     }						\
   while (0)
 
-// m68kelf.h provides REGISTER_PREFIX "%" so GCC emits %d0, %sp, etc.
-// No need for --register-prefix-optional since all assembly uses % prefix
+// Override m68kelf.h REGISTER_PREFIX "%" to emit Motorola-style register names
+#undef REGISTER_PREFIX
+#define REGISTER_PREFIX ""
+
+// Emit "a6" instead of "fp" for the frame pointer
+#undef M68K_FP_REG_NAME
+#define M68K_FP_REG_NAME "a6"
+
+// GAS on ELF expects % prefix by default; --register-prefix-optional accepts both
 #undef ASM_SPEC
-#define ASM_SPEC "%(asm_cpu_spec) %(asm_pcrel_spec)"
+#define ASM_SPEC "%(asm_cpu_spec) %(asm_pcrel_spec) --register-prefix-optional"
 
 #undef LINK_SPEC
 #define LINK_SPEC "-q"
