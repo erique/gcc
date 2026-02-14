@@ -5540,7 +5540,7 @@ print_operand_address2 (FILE *file, rtx addr, int offset)
 #if defined(TARGET_AMIGAOS)
 	  asm_fprintf (file, ",%Rpc");
 #else
-	  asm_fprintf (file, flag_pic == 1 ? ":w,%Rpc)" : ":l,%Rpc");
+	  asm_fprintf (file, flag_pic == 1 ? ":w,%Rpc" : ":l,%Rpc");
 #endif
 	  if (ket)
 	    append_outer_address(file, address);
