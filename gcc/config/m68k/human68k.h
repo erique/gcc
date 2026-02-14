@@ -56,6 +56,9 @@ along with GCC; see the file COPYING3.  If not see
 #undef ENDFILE_SPEC
 #define ENDFILE_SPEC ""
 
+// Prepend _ to all C symbols in assembly output, matching the Sharp XC convention.
+// This also disambiguates C identifiers from m68k register names (e.g. _fpi vs fpi)
+// when using Motorola-style unprefixed register names with --register-prefix-optional.
 #undef USER_LABEL_PREFIX
-#define USER_LABEL_PREFIX ""
+#define USER_LABEL_PREFIX "_"
 
