@@ -48,7 +48,7 @@ along with GCC; see the file COPYING3.  If not see
 #define LINK_SPEC "-q"
 
 #undef LIB_SPEC
-#define LIB_SPEC "%{!nostdlib: -lc -ldos -liocs} %{lm:-lm} %{lpthread:-lpthread}"
+#define LIB_SPEC "%{!nostdlib: --start-group -lc -ldos -liocs --end-group} %{lm:-lm} %{lpthread:-lpthread}"
 
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC "crt0.o%s"
